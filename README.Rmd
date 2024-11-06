@@ -31,27 +31,65 @@ head(av)
 
 Get the data into a format where the five columns for Death[1-5] are replaced by two columns: Time, and Death. Time should be a number between 1 and 5 (look into the function `parse_number`); Death is a categorical variables with values "yes", "no" and "". Call the resulting data set `deaths`. 
 
+```{r}
+library(dplyr)
+library(tidyr)
+library(readr)
+
+deaths <- av %>%
+  # Gather Death1 to Death5 into two columns: Time and Death
+  pivot_longer(cols = starts_with("Death"),
+               names_to = "Time",
+               values_to = "Death") %>%
+  # Extract the numeric part of "Death1", "Death2", etc., to create the Time variable
+  mutate(Time = parse_number(Time)) %>%
+  # Ensure Death has only "yes", "no", or ""
+  mutate(Death = case_when(
+    Death == "YES" ~ "yes",
+    Death == "NO" ~ "no",
+    TRUE ~ Death  # Keep as "" if it's empty
+  ))
+
+```
+
+
 Similarly, deal with the returns of characters.
+
+```{r}
+returns <- av %>%
+  # Gather Return1 to Return5 into two columns: Time and Return
+  pivot_longer(cols = starts_with("Return"),
+               names_to = "Time",
+               values_to = "Return") %>%
+  # Extract the numeric part of "Return1", "Return2", etc., to create the Time variable
+  mutate(Time = parse_number(Time)) %>%
+  # Standardize Return column to "yes", "no", or ""
+  mutate(Return = case_when(
+    Return == "YES" ~ "yes",
+    Return == "NO" ~ "no",
+    TRUE ~ Return  # Keep as "" if it's empty
+  ))
+
+summary(returns)
+```
+
+
 
 Based on these datasets calculate the average number of deaths an Avenger suffers. 
 
 ```{r}
 average_deaths <- deaths %>%
-  # Filter rows where Death is "yes"
   filter(Death == "yes") %>%
-  # Group by Avenger's identifier (assuming 'Name' is unique for each Avenger)
   group_by(URL) %>%
-  # Count the number of times each Avenger has died
   summarise(total_deaths = n(),
             death2 = max(Time))
-  # Calculate the average number of deaths per Avenger
-  # summarise(average_deaths = mean(total_deaths))
+
 
 mean(average_deaths$total_deaths)
 sum(average_deaths$total_deaths)
-
-
 ```
+
+
 
 ## Individually
 
