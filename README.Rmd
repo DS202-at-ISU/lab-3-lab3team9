@@ -123,6 +123,7 @@ Each team member picks one of the statements in the FiveThirtyEight [analysis](h
 
 ### Include the code
 
+```{r}
 # Load necessary libraries
 library(dplyr)
 
@@ -144,6 +145,7 @@ death_percentage <- (deaths_count / total_avengers) * 100
 cat("Total Avengers:", total_avengers, "\n")
 cat("Avengers who died at least once:", deaths_count, "\n")
 cat("Percentage of Avengers who died at least once:", death_percentage, "%\n")
+```
 
 Include at least one sentence discussing the result of your fact-checking endeavor.
 
