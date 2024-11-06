@@ -35,6 +35,24 @@ Similarly, deal with the returns of characters.
 
 Based on these datasets calculate the average number of deaths an Avenger suffers. 
 
+```{r}
+average_deaths <- deaths %>%
+  # Filter rows where Death is "yes"
+  filter(Death == "yes") %>%
+  # Group by Avenger's identifier (assuming 'Name' is unique for each Avenger)
+  group_by(URL) %>%
+  # Count the number of times each Avenger has died
+  summarise(total_deaths = n(),
+            death2 = max(Time))
+  # Calculate the average number of deaths per Avenger
+  # summarise(average_deaths = mean(total_deaths))
+
+mean(average_deaths$total_deaths)
+sum(average_deaths$total_deaths)
+
+
+```
+
 ## Individually
 
 For each team member, copy this part of the report. 
