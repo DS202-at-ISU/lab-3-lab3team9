@@ -89,6 +89,8 @@ possible.
 
 > Quote the statement you are planning to fact-check.
 
+Katie: "If Hulk is sent to the future and we follow his adventures there, he’s not dead"
+
 ### Include the code
 
 Make sure to include the code to derive the (numeric) fact for the
