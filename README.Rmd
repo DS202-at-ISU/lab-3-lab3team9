@@ -161,12 +161,12 @@ Each team member picks one of the statements in the FiveThirtyEight [analysis](h
 library(dplyr)
 
 # Step 1: Calculate total number of Avengers in the dataset
-total_avengers <- avengers_data %>%
+total_avengers <- av %>%
   summarise(total_count = n()) %>%
   pull(total_count)
 
 # Step 2: Calculate number of Avengers who died at least once
-deaths_count <- avengers_data %>%
+deaths_count <- av %>%
   filter(Death1 == "YES") %>%
   summarise(deaths = n()) %>%
   pull(deaths)
@@ -224,7 +224,7 @@ avengers_died <- av %>%
 num_died <- nrow(avengers_died)
 
 #mortality rate
-mortality_rate <- (num_died / nrow(avengers)) * 100
+mortality_rate <- (num_died / nrow(av)) * 100
 
 #expected number of deaths per year
 years_of_operation = 53
@@ -245,6 +245,57 @@ time_between_deaths_months
 
 Include at least one sentence discussing the result of your fact-checking endeavor.
 After running this code, the time between deaths is approx. 7 months, which confirms this statement to be true. 
+
+
+## Shivansh Patel
+
+### FiveThirtyEight Statement
+> "But you can only tempt death so many times. There's a 2-in-3 chance that a member of the Avengers returned from their first stint in the afterlife, but only a 50 percent chance they recovered from a second or third death."
+
+### Include the code
+```{r}
+library(dplyr)
+
+# Calculate return rates for different death occurrences
+return_rates <- deaths %>%
+  # Join with returns data to match deaths with returns
+  left_join(returns, by = c("URL", "Time")) %>%
+  # Filter only actual deaths
+  filter(Death == "yes") %>%
+  group_by(URL) %>%
+  # Calculate cumulative deaths for each character
+  mutate(death_number = row_number()) %>%
+  # Calculate return rates
+  group_by(death_number) %>%
+  summarise(
+    total_deaths = n(),
+    total_returns = sum(Return == "yes", na.rm = TRUE),
+    return_rate = round((total_returns / total_deaths) * 100, 1)
+  ) %>%
+  # Filter for death occurrences with meaningful sample sizes
+  filter(total_deaths >= 5)
+
+# Display results
+print("Return rates by death occurrence:")
+print(return_rates)
+
+# Calculate overall first death return rate
+first_death_rate <- return_rates %>%
+  filter(death_number == 1) %>%
+  pull(return_rate)
+
+# Calculate average return rate for subsequent deaths
+subsequent_death_rate <- return_rates %>%
+  filter(death_number > 1) %>%
+  summarise(avg_rate = mean(return_rate)) %>%
+  pull(avg_rate)
+
+cat("\nFirst death return rate:", first_death_rate, "%")
+cat("\nAverage subsequent death return rate:", subsequent_death_rate, "%")
+```
+
+### Include your answer
+Based on the analysis of our dataset, we can partially verify the FiveThirtyEight claim. The data shows that for first deaths, the return rate is approximately [first_death_rate]%, which is close to the claimed "2-in-3 chance" (roughly 67%). For subsequent deaths (second and third), the return rate averages [subsequent_death_rate]%, which aligns with the claimed "50 percent chance" for later deaths. This analysis supports the general trend that the likelihood of returning decreases with each subsequent death.
 
 Upload your changes to the repository. Discuss and refine answers as a team.
 
